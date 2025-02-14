@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using static API.Models.Message;
+using static API.Models.GlobalModel;
 
 namespace API.Controllers
 {
@@ -15,33 +15,25 @@ namespace API.Controllers
         public static readonly HttpClient _httpClient = new HttpClient();
 
         // GET api/values
-        public List<MessageResponse> Get(int page, int size)
+        public GlobalMessage Get(int page, int size)
         {
-            List<MessageResponse> Response = new List<MessageResponse>();
-            Response = JsonConvert.DeserializeObject<List<MessageResponse>>(_httpClient.GetStringAsync(url).Result);
-            Response = Response.Skip((page-1)*size).Take(size).ToList();
-            return (Response);
+            GlobalMessage Model = new GlobalMessage();
+            Model.listMessage = new List<Message>();
+            try
+            {
+                var strData = _httpClient.GetStringAsync(url).Result;
+                Model.listMessage = JsonConvert.DeserializeObject<List<Message>>(strData);
+                Model.listMessage = Model.listMessage.Skip((page - 1) * size).Take(size).ToList();
+                Model.status = "Success";
+            }
+            catch (Exception e)
+            {
+                Model.status = "failed";
+                Model.errorMssage = "Service Sedang tidak gangguan harp coba beberapa saat lagi";
+            }
+
+            return (Model);
         }
 
-        // GET api/values/5
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/values/5
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/values/5
-        public void Delete(int id)
-        {
-        }
     }
 }
