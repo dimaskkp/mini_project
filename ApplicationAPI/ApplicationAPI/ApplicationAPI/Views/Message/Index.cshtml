@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ApplicationAPI.Models.GlobalModel.MessageResponse>
+﻿@model List<ApplicationAPI.Models.GlobalModel.Message>
 
 @{
     ViewBag.Title = "Index";
@@ -6,29 +6,27 @@
 
 <h2>Index</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+<form method="get" action="@Url.Action("Index")">
+    <label>Page:</label>
+    <input type="number" name="page" value="@ViewBag.CurrentPage" min="1" max="@ViewBag.TotalPages" required />
+
+    <label>Size:</label>
+    <input type="number" name="size" value="@ViewBag.PageSize" min="1" required />
+
+    <button type="submit">Apply</button>
+</form>
+
 <table class="table">
     <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.id)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.title)
-        </th>
-        <th></th>
+        <th>ID</th>
+        <th>Title</th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.id)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.title)
-        </td>
-    </tr>
-}
-
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.id</td>
+            <td>@item.title</td>
+        </tr>
+    }
 </table>

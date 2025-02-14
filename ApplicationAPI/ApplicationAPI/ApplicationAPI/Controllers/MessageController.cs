@@ -11,6 +11,7 @@ using ApplicationAPI.Models;
 using Newtonsoft.Json;
 using static ApplicationAPI.Models.GlobalModel;
 using PagedList;
+using PagedList.Mvc;
 
 namespace ApplicationAPI.Controllers
 {
@@ -24,13 +25,29 @@ namespace ApplicationAPI.Controllers
         // GET: Message
         public ActionResult Index(int page = 1, int size = 10)
         {
+            GlobalMessage Model = new GlobalMessage();
 
-            List<MessageResponse> Response = new List<MessageResponse>();
-            string url = $"{urlAPI}?page={page}&size={size}";
-            var data = _httpClient.GetStringAsync(urlAPI).Result;
-            Response = JsonConvert.DeserializeObject<List<MessageResponse>>(data);
+            try
+            {
+                string url = $"{urlAPI}?page={page}&size={size}";
+                var response =  _httpClient.GetAsync(url).Result;
 
-            return View(Response);
+                if (response.IsSuccessStatusCode)
+                {
+                    var resultString = response.Content.ReadAsStringAsync().Result;
+                    Model = JsonConvert.DeserializeObject<GlobalMessage>(resultString);
+                }
+                else
+                {
+                    // error get data respon api selain 200
+                }
+            }
+            catch (Exception ex)
+            {
+                // error web selain 
+            }
+
+            return View(Model.listMessage);
         }
 
         // GET: Message/Details/5
